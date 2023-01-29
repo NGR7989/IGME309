@@ -1,6 +1,8 @@
 #include "Main.h"
+#include "PriorityQueue.h"
+
 template <typename T> 
-void Print(std::deque<T> a_queue)
+void Print(PriorityQueue<T> a_queue)
 {
 	std::cout << "Begining of queue......." << std::endl;
 	uint count = a_queue.size();
@@ -14,63 +16,63 @@ void Print(std::deque<T> a_queue)
 
 int main(void)
 {
-	std::deque<int> myQueue;
+	PriorityQueue<int> myQueue;
 	//Push elements
-	myQueue.push_back(0);
+	myQueue.Push(0);
 	std::cout << "	just pushed +++++" << std::endl;
-	myQueue.push_back(1);
+	myQueue.Push(1);
 	std::cout << "	just pushed +++++" << std::endl;
-	myQueue.push_back(2);
+	myQueue.Push(2);
 	std::cout << "	just pushed +++++" << std::endl;
 	//Print queue
 	Print<int>(myQueue);
 	//pop an element
-	myQueue.pop_front();
+	myQueue.Pop();
 	std::cout << "		just popped -----" << std::endl;
 	//add elements
-	myQueue.push_back(3);
+	myQueue.Push(3);
 	std::cout << "	just pushed +++++" << std::endl;
-	myQueue.push_back(4);
+	myQueue.Push(4);
 	std::cout << "	just pushed +++++" << std::endl;
-	myQueue.push_back(5);
+	myQueue.Push(5);
 	std::cout << "	just pushed +++++" << std::endl;
 	//Print queue
 	Print<int>(myQueue);
-	myQueue.pop_front();
+	myQueue.Pop();
 	std::cout << "		just popped -----" << std::endl;
-	myQueue.pop_front();
+	myQueue.Pop();
 	std::cout << "		just popped -----" << std::endl;
 	//Print queue
 	Print<int>(myQueue);
 	//clear queue
-	uint count = myQueue.size();
+	uint count = myQueue.GetSize();
 	for (uint i = 0; i < count; ++i)
 	{
-		myQueue.pop_front();
+		myQueue.Pop();
 		std::cout << "		just popped -----" << std::endl;
 	}
 	//Print queue
 	Print<int>(myQueue);
 
 	//Complex Data usage
-	std::deque<Foo> myFooQueue;
+	PriorityQueue<Foo> myFooQueue;
 	for (uint i = 0; i < 10; ++i)
 	{
 		Foo foo(i);
-		myFooQueue.push_back(foo);
+		myFooQueue.Push(foo);
 		std::cout << "	just pushed +++++" << std::endl;
 		if (i % 2 == 0)
 		{
-			myFooQueue.pop_front();
+			myFooQueue.Pop();
 			std::cout << "		just popped -----" << std::endl;
 		}
 	}
 
-	std::deque<AlbertoClass> myAlbertoQueue;
+	PriorityQueue<AlbertoClass> myAlbertoQueue;
 	for (uint i = 30; i < 40; ++i)
 	{
 		AlbertoClass alberto(i);
-		myAlbertoQueue.push_back(alberto);
+		myAlbertoQueue.Push(alberto);
 		std::cout << "	just pushed +++++" << std::endl;
 	}
 	std::cout << "	Content" << std::endl;
