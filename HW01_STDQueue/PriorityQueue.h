@@ -13,7 +13,7 @@ public:
 	bool IsEmpty();
 	int GetSize();
 
-	T& operator[](int);
+	T operator[](int);
 
 private:
 	int trueLength; // What is the true size of the array 
@@ -51,14 +51,15 @@ template <class T> PriorityQueue<T>::PriorityQueue(PriorityQueue* queueToCopy)
 
 template <class T> PriorityQueue<T>::~PriorityQueue()
 {
-	delete[] items;
+	//delete[] items; // Causes crashing? 
 	items = nullptr;
 }
 
 template <class T> void PriorityQueue<T>::Push(T item)
 {
+	cout << item << endl;
 	// Check if can fit into inner array 
-	if (dataLength + 1 <= trueLength)
+	if (dataLength + 1 < trueLength)
 	{
 		// Adds to end of data length 
 		items[dataLength] = item;
@@ -79,7 +80,7 @@ template <class T> void PriorityQueue<T>::Push(T item)
 		// Adds the newest item 
 		next[dataLength] = item;
 
-		delete[] items; // Cleans up previous array 
+		//delete[] items; // Cleans up previous array 
 
 		// replaces inner array with bigger array 
 		items = next;
@@ -89,6 +90,7 @@ template <class T> void PriorityQueue<T>::Push(T item)
 	BubbleSort(items, dataLength);
 }
 
+using namespace std;
 template <class T> T PriorityQueue<T>::Pop()
 {
 	if (dataLength >= 1)
@@ -98,14 +100,15 @@ template <class T> T PriorityQueue<T>::Pop()
 		T hold = items[0];
 
 		T* next = new T[trueLength];
+		
+		//cout << items[0] << endl;
 
 		// Copies items by starting without past first in queue
 		for (int i = 1; i < dataLength; i++)
 		{
 			next[i - 1] = items[i];
-
 		}
-		dataLength--;
+		dataLength -= 1;
 
 		//delete[] items;
 		items = next;
@@ -167,7 +170,7 @@ template <class T> void PriorityQueue<T>::Swap(T* i, T* j)
 }
 
 
-template <class T> T& PriorityQueue<T>::operator[] (int index)
+template <class T> T PriorityQueue<T>::operator[] (int index)
 {
 	if (index < dataLength && index >= 0)
 	{

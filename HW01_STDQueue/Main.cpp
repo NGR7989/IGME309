@@ -1,11 +1,13 @@
 #include "Main.h"
 #include "PriorityQueue.h"
 
+using namespace std;
+
 template <typename T> 
 void Print(PriorityQueue<T> a_queue)
 {
 	std::cout << "Begining of queue......." << std::endl;
-	uint count = a_queue.size();
+	uint count = a_queue.GetSize();
 	for (uint i = 0; i < count; ++i)
 	{
 		std::cout << a_queue[i];
@@ -27,9 +29,11 @@ int main(void)
 	//Print queue
 	Print<int>(myQueue);
 	//pop an element
-	myQueue.Pop();
+	//myQueue.Pop();
 	std::cout << "		just popped -----" << std::endl;
 	//add elements
+	Print<int>(myQueue);
+
 	myQueue.Push(3);
 	std::cout << "	just pushed +++++" << std::endl;
 	myQueue.Push(4);
@@ -54,19 +58,19 @@ int main(void)
 	//Print queue
 	Print<int>(myQueue);
 
-	//Complex Data usage
-	PriorityQueue<Foo> myFooQueue;
-	for (uint i = 0; i < 10; ++i)
-	{
-		Foo foo(i);
-		myFooQueue.Push(foo);
-		std::cout << "	just pushed +++++" << std::endl;
-		if (i % 2 == 0)
-		{
-			myFooQueue.Pop();
-			std::cout << "		just popped -----" << std::endl;
-		}
-	}
+	////Complex Data usage
+	//PriorityQueue<Foo> myFooQueue;
+	//for (uint i = 0; i < 10; ++i)
+	//{
+	//	Foo foo(i);
+	//	myFooQueue.Push(foo);
+	//	std::cout << "	just pushed +++++" << std::endl;
+	//	if (i % 2 == 0)
+	//	{
+	//		myFooQueue.Pop();
+	//		std::cout << "		just popped -----" << std::endl;
+	//	}
+	//}
 
 	PriorityQueue<AlbertoClass> myAlbertoQueue;
 	for (uint i = 30; i < 40; ++i)
@@ -84,6 +88,6 @@ int main(void)
 	std::cout << "Press Enter to finish." << std::endl;
 
 
-	
+
 	getchar();
 }
