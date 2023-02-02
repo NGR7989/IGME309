@@ -96,8 +96,9 @@ void AppClass::InitVariables(void)
 	int attributeCount = 2;
 	
 	// Position attribute
-	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(0); // Edits layout[0] from the shader 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, attributeCount * sizeof(glm::vec3), (GLvoid*)0);
+	// Start, how many to jump for next, type
 
 	// Color attribute
 	glEnableVertexAttribArray(1);
