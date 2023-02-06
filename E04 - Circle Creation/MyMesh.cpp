@@ -16,9 +16,26 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
-	AddTri(	vector3(0.0f, 0.0f, 0.0f),
+	/*AddTri(	vector3(0.0f, 0.0f, 0.0f),
 			vector3(1.0f, 0.0f, 0.0f),
-			vector3(0.77f, 0.77f, 0.0f));
+			vector3(0.77f, 0.77f, 0.0f));*/
+
+	float radAmount = (2 * 3.14) / a_nSubdivisions;
+
+	std::cout << _CMATH_::sin(3.14 / 2) << std::endl;
+	//AddTri(vector3(0.0f, 0.0f, 0.0f),
+	//	vector3(_CMATH_::sin(3.14 / 2), _CMATH_::cos(3.14 / 2), 0.0f),
+	//	vector3(_CMATH_::sin(3.14 / 2 + radAmount), _CMATH_::cos(3.14 / 2 + radAmount), 0.0f));
+
+	for (unsigned int i = 0; i < a_nSubdivisions; i++)
+	{
+		
+		AddTri(vector3(0.0f, 0.0f, 0.0f),
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * i), _CMATH_::cos(3.14 / 2 + radAmount * i), 0.0f),
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)), _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)), 0.0f));
+	}
+
+	 //std::cout << _CMATH_::sin(5) << std::endl;
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
