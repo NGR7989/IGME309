@@ -31,8 +31,8 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	{
 		
 		AddTri(vector3(0.0f, 0.0f, 0.0f),
-			vector3(_CMATH_::sin(3.14 / 2 + radAmount * i), _CMATH_::cos(3.14 / 2 + radAmount * i), 0.0f),
-			vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)), _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)), 0.0f));
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * i), _CMATH_::cos(3.14 / 2 + radAmount * i), 0.0f) * a_fRadius,
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)), _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)), 0.0f) * a_fRadius);
 	}
 
 	 //std::cout << _CMATH_::sin(5) << std::endl;
