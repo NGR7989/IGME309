@@ -360,8 +360,51 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 	// Replace this with your code
 	
+	float radAmountA = (2 * PI) / a_nSubdivisionsA;
+	float radAmountB = (2 * PI) / a_nSubdivisionsB;
+	float mag = (a_fOuterRadius + a_fInnerRadius) / 2; // Dis to center of circles 
+	float radius = a_fOuterRadius - a_fInnerRadius;  // Radius of the duplicated circles 
+
+	// The primary circle that the others are built on
+	std::vector<vector3> circleFrame;
+	// The actual circle that the geometry is stitched upon 
+	std::vector<vector3> circleConnectors; 
+
 	// Form a circle in data with sub A as its points 
-	
+	for (unsigned int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		float frameDelta = PI / 2 + radAmountA * i;
+		vector3 currentFramePoint = vector3(_CMATH_::sin(frameDelta) * mag, _CMATH_::cos(frameDelta) * mag, 0);
+		/*vector3 nextFramePoint = vector3(_CMATH_::sin(3.14 / 2 + radAmountA * (i + 1)) * mag, _CMATH_::cos(3.14 / 2 + radAmountA * (i + 1)) * mag, 0);
+
+		AddTri(
+			vector3(0, 0, 0),
+			currentFramePoint,
+			nextFramePoint
+		);*/
+		
+		// Along each point in this circle create a circle 
+		for (unsigned int j = 0; j < a_nSubdivisionsB; j++)
+		{
+			
+			float connectorDelta = PI / 2 + radAmountA * j;
+			vector3 currentFaceAPoint = currentFramePoint + vector3(_CMATH_::sin(connectorDelta) * radius, 0, _CMATH_::cos(connectorDelta) * radius);
+			vector3 nextFaceAPoint = currentFramePoint + vector3(_CMATH_::sin(3.14 / 2 + radAmountA * (j + 1)) * radius, 0, _CMATH_::cos(3.14 / 2 + radAmountA * (j + 1)) * radius);
+
+			glm::mat4x4 rotMat = glm::rotate(IDENTITY_M4, 10.0f, AXIS_Y);
+			vector4 pos = rotMat * vector4(currentFaceAPoint, 1);
+			vector4 posNext = rotMat * vector4(nextFaceAPoint, 1);
+			vector4 center = rotMat * vector4(currentFramePoint, 1);
+
+
+			AddTri(
+				currentFramePoint,
+				currentFaceAPoint,
+				nextFaceAPoint
+			);
+		}
+	}
+
 	// Along each point generate a circle in data perpendicular to primary circle 
 
 	//
