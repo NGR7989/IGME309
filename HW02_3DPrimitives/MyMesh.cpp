@@ -72,12 +72,12 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	{
 
 		AddTri(vector3(0.0f, 0.0f, -a_fHeight),
-			vector3(_CMATH_::sin(3.14 / 2 + radAmount * i), _CMATH_::cos(3.14 / 2 + radAmount * i), 0.0f) * a_fRadius,
-			vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)), _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)), 0.0f) * a_fRadius);
+			vector3(_CMATH_::sin(radAmount * i), _CMATH_::cos(radAmount * i), 0.0f) * a_fRadius,
+			vector3(_CMATH_::sin( radAmount * (i + 1)), _CMATH_::cos(radAmount * (i + 1)), 0.0f) * a_fRadius);
 
 		AddTri(vector3(0.0f, 0.0f, 0),
-			vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)), _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)), 0.0f) * a_fRadius,
-			vector3(_CMATH_::sin(3.14 / 2 + radAmount * i), _CMATH_::cos(3.14 / 2 + radAmount * i), 0.0f)* a_fRadius);
+			vector3(_CMATH_::sin( radAmount * (i + 1)), _CMATH_::cos(radAmount * (i + 1)), 0.0f) * a_fRadius,
+			vector3(_CMATH_::sin(radAmount * i), _CMATH_::cos(radAmount * i), 0.0f)* a_fRadius);
 	}
 
 
@@ -113,8 +113,8 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	// Create the end faces 
 	for (unsigned int i = 0; i < a_nSubdivisions; i++)
 	{
-		vector3 currentFaceAPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fRadius, -a_fHeight / 2);
-		vector3 nextFaceAPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, -a_fHeight / 2);
+		vector3 currentFaceAPoint = vector3(_CMATH_::sin(radAmount * i) * a_fRadius, _CMATH_::cos(radAmount * i) * a_fRadius, -a_fHeight / 2);
+		vector3 nextFaceAPoint = vector3(_CMATH_::sin(radAmount * (i + 1)) * a_fRadius, _CMATH_::cos( radAmount * (i + 1)) * a_fRadius, -a_fHeight / 2);
 		faceA.push_back(currentFaceAPoint);
 
 		AddTri(
@@ -123,8 +123,8 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 			nextFaceAPoint
 		);
 
-		vector3 currentFaceBPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, a_fHeight / 2);
-		vector3 nextFaceBPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fRadius, a_fHeight / 2);
+		vector3 currentFaceBPoint = vector3(_CMATH_::sin(radAmount * (i + 1)) * a_fRadius, _CMATH_::cos(radAmount * (i + 1)) * a_fRadius, a_fHeight / 2);
+		vector3 nextFaceBPoint = vector3(_CMATH_::sin(radAmount * i) * a_fRadius, _CMATH_::cos(radAmount * i) * a_fRadius, a_fHeight / 2);
 		faceB.push_back(currentFaceBPoint);
 
 		AddTri(
@@ -210,8 +210,8 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	{
 		// Inner 
 
-		vector3 currentFaceAPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fInnerRadius, -a_fHeight / 2);
-		vector3 nextFaceAPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, -a_fHeight / 2);
+		vector3 currentFaceAPointInner = vector3(_CMATH_::sin(radAmount * i) * a_fInnerRadius, _CMATH_::cos(radAmount * i) * a_fInnerRadius, -a_fHeight / 2);
+		vector3 nextFaceAPointInner = vector3(_CMATH_::sin(radAmount * (i + 1)) * a_fInnerRadius, _CMATH_::cos(radAmount * (i + 1)) * a_fInnerRadius, -a_fHeight / 2);
 		innerFaceA.push_back(currentFaceAPointInner);
 
 		/*AddTri(
@@ -220,8 +220,8 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 			nextFaceAPointInner
 		);*/
 
-		vector3 currentFaceBPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, a_fHeight / 2);
-		vector3 nextFaceBPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fInnerRadius, a_fHeight / 2);
+		vector3 currentFaceBPointInner = vector3(_CMATH_::sin(radAmount * (i + 1)) * a_fInnerRadius, _CMATH_::cos(radAmount * (i + 1)) * a_fInnerRadius, a_fHeight / 2);
+		vector3 nextFaceBPointInner = vector3(_CMATH_::sin(radAmount * i) * a_fInnerRadius, _CMATH_::cos(radAmount * i) * a_fInnerRadius, a_fHeight / 2);
 		innerFaceB.push_back(currentFaceBPointInner);
 
 		/*AddTri(
@@ -233,8 +233,8 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 
 		// Outer
 
-		vector3 currentFaceAPointOuter = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fOuterRadius, -a_fHeight / 2);
-		vector3 nextFaceAPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, -a_fHeight / 2);
+		vector3 currentFaceAPointOuter = vector3(_CMATH_::sin(radAmount * i) * a_fOuterRadius, _CMATH_::cos(radAmount * i) * a_fOuterRadius, -a_fHeight / 2);
+		vector3 nextFaceAPoint = vector3(_CMATH_::sin(radAmount * (i + 1)) * a_fOuterRadius, _CMATH_::cos(radAmount * (i + 1)) * a_fOuterRadius, -a_fHeight / 2);
 		outerFaceA.push_back(currentFaceAPointOuter);
 
 		/*AddTri(
@@ -243,8 +243,8 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 			nextFaceAPoint
 		);*/
 
-		vector3 currentFaceBPointOuter = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, a_fHeight / 2);
-		vector3 nextFaceBPointOuter = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fOuterRadius, a_fHeight / 2);
+		vector3 currentFaceBPointOuter = vector3(_CMATH_::sin(radAmount * (i + 1)) * a_fOuterRadius, _CMATH_::cos(radAmount * (i + 1)) * a_fOuterRadius, a_fHeight / 2);
+		vector3 nextFaceBPointOuter = vector3(_CMATH_::sin(radAmount * i) * a_fOuterRadius, _CMATH_::cos(radAmount * i) * a_fOuterRadius, a_fHeight / 2);
 		outerFaceB.push_back(currentFaceBPointOuter);
 
 		/*AddTri(
@@ -360,54 +360,76 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 	// Replace this with your code
 	
+	//float radAmountA = (2 * PI) / a_nSubdivisionsA;
+	//float radAmountB = (2 * PI) / a_nSubdivisionsB;
+	//float mag = (a_fOuterRadius + a_fInnerRadius) / 2; // Dis to center of circles 
+	//float radius = a_fOuterRadius - a_fInnerRadius;  // Radius of the duplicated circles 
+
+	//// The primary circle that the others are built on
+	//std::vector<vector3> circleFrame;
+	//// The actual circle that the geometry is stitched upon 
+	//std::vector<vector3> circleConnectors; 
+
+	//// Form a circle in data with sub A as its points 
+	//for (unsigned int i = 0; i < a_nSubdivisionsA; i++)
+	//{
+	//	float frameDelta = PI / 2 + radAmountA * i;
+	//	vector3 currentFramePoint = vector3(_CMATH_::sin(frameDelta) * mag, _CMATH_::cos(frameDelta) * mag, 0);
+	//	/*vector3 nextFramePoint = vector3(_CMATH_::sin(3.14 / 2 + radAmountA * (i + 1)) * mag, _CMATH_::cos(3.14 / 2 + radAmountA * (i + 1)) * mag, 0);
+
+	//	AddTri(
+	//		vector3(0, 0, 0),
+	//		currentFramePoint,
+	//		nextFramePoint
+	//	);*/
+	//	
+	//	// Along each point in this circle create a circle 
+	//	for (unsigned int j = 0; j < a_nSubdivisionsB; j++)
+	//	{
+	//		
+	//		float connectorDelta = PI / 2 + radAmountA * j;
+	//		vector3 currentFaceAPoint = vector3(_CMATH_::sin(connectorDelta) * radius, 0, _CMATH_::cos(connectorDelta) * radius);
+	//		vector3 nextFaceAPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmountA * (j + 1)) * radius, 0, _CMATH_::cos(3.14 / 2 + radAmountA * (j + 1)) * radius);
+
+	//		glm::mat4x4 matTemp = glm::rotate(IDENTITY_M4, (float)((frameDelta * 180) / PI), AXIS_Z);
+
+	//		vector3 center = currentFramePoint;
+	//		vector4 pos = matTemp * vector4(currentFaceAPoint, 1);
+	//		vector4 posNext = matTemp * vector4(nextFaceAPoint, 1);
+
+	//		vector3 dir = vector3(cos(frameDelta), sin(frameDelta), 0) * mag;
+	//		
+	//		AddTri(
+	//			vector3(0,0,0),
+	//			vector4(dir, 0) + pos,
+	//			vector4(dir, 0) + posNext
+	//		);
+	//	}
+	//}
+
+
 	float radAmountA = (2 * PI) / a_nSubdivisionsA;
 	float radAmountB = (2 * PI) / a_nSubdivisionsB;
 	float mag = (a_fOuterRadius + a_fInnerRadius) / 2; // Dis to center of circles 
-	float radius = a_fOuterRadius - a_fInnerRadius;  // Radius of the duplicated circles 
 
-	// The primary circle that the others are built on
-	std::vector<vector3> circleFrame;
-	// The actual circle that the geometry is stitched upon 
-	std::vector<vector3> circleConnectors; 
-
-	// Form a circle in data with sub A as its points 
 	for (unsigned int i = 0; i < a_nSubdivisionsA; i++)
 	{
-		float frameDelta = PI / 2 + radAmountA * i;
-		vector3 currentFramePoint = vector3(_CMATH_::sin(frameDelta) * mag, _CMATH_::cos(frameDelta) * mag, 0);
-		/*vector3 nextFramePoint = vector3(_CMATH_::sin(3.14 / 2 + radAmountA * (i + 1)) * mag, _CMATH_::cos(3.14 / 2 + radAmountA * (i + 1)) * mag, 0);
+		float delta = radAmountA * i;
 
-		AddTri(
-			vector3(0, 0, 0),
-			currentFramePoint,
-			nextFramePoint
-		);*/
-		
-		// Along each point in this circle create a circle 
 		for (unsigned int j = 0; j < a_nSubdivisionsB; j++)
 		{
-			
-			float connectorDelta = PI / 2 + radAmountA * j;
-			vector3 currentFaceAPoint = currentFramePoint + vector3(_CMATH_::sin(connectorDelta) * radius, 0, _CMATH_::cos(connectorDelta) * radius);
-			vector3 nextFaceAPoint = currentFramePoint + vector3(_CMATH_::sin(3.14 / 2 + radAmountA * (j + 1)) * radius, 0, _CMATH_::cos(3.14 / 2 + radAmountA * (j + 1)) * radius);
+			float theta = radAmountB * i;
 
-			glm::mat4x4 rotMat = glm::rotate(IDENTITY_M4, 10.0f, AXIS_Y);
-			vector4 pos = rotMat * vector4(currentFaceAPoint, 1);
-			vector4 posNext = rotMat * vector4(nextFaceAPoint, 1);
-			vector4 center = rotMat * vector4(currentFramePoint, 1);
-
+			vector3 currentFramePoint = vector3(_CMATH_::sin(delta) * a_fInnerRadius, _CMATH_::cos(delta) * a_fInnerRadius, _CMATH_::sin(theta)) ;
+			vector3 nextFramePoint = vector3(_CMATH_::sin(radAmountA * (i + 1)) * a_fInnerRadius, _CMATH_::cos(radAmountA * (i + 1)) * a_fInnerRadius, _CMATH_::sin(radAmountB * (i + 1)));
 
 			AddTri(
+				vector3(0, 0, 0),
 				currentFramePoint,
-				currentFaceAPoint,
-				nextFaceAPoint
+				nextFramePoint
 			);
 		}
 	}
-
-	// Along each point generate a circle in data perpendicular to primary circle 
-
-	//
 
 	// -------------------------------
 
