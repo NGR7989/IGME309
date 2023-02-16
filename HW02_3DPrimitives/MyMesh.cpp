@@ -61,7 +61,26 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	
+	float radAmount = (2 * 3.14) / a_nSubdivisions;
+
+	//AddTri(vector3(0.0f, 0.0f, 0.0f),
+	//	vector3(_CMATH_::sin(3.14 / 2), _CMATH_::cos(3.14 / 2), 0.0f),
+	//	vector3(_CMATH_::sin(3.14 / 2 + radAmount), _CMATH_::cos(3.14 / 2 + radAmount), 0.0f));
+
+	for (unsigned int i = 0; i < a_nSubdivisions; i++)
+	{
+
+		AddTri(vector3(0.0f, 0.0f, -a_fHeight),
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * i), _CMATH_::cos(3.14 / 2 + radAmount * i), 0.0f) * a_fRadius,
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)), _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)), 0.0f) * a_fRadius);
+
+		AddTri(vector3(0.0f, 0.0f, 0),
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)), _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)), 0.0f) * a_fRadius,
+			vector3(_CMATH_::sin(3.14 / 2 + radAmount * i), _CMATH_::cos(3.14 / 2 + radAmount * i), 0.0f)* a_fRadius);
+	}
+
+
 	// -------------------------------
 
 	// Adding information about color
@@ -84,8 +103,71 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
+
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	float radAmount = (2 * 3.14) / a_nSubdivisions;
+
+	std::vector<vector3> faceA;
+	std::vector<vector3> faceB;
+
+	// Create the end faces 
+	for (unsigned int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 currentFaceAPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fRadius, -a_fHeight / 2);
+		vector3 nextFaceAPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, -a_fHeight / 2);
+		faceA.push_back(currentFaceAPoint);
+
+		AddTri(
+			vector3(0.0f, 0.0f, -a_fHeight / 2),
+			currentFaceAPoint,
+			nextFaceAPoint
+		);
+
+		vector3 currentFaceBPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fRadius, a_fHeight / 2);
+		vector3 nextFaceBPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fRadius, a_fHeight / 2);
+		faceB.push_back(currentFaceBPoint);
+
+		AddTri(
+			vector3(0.0f, 0.0f, a_fHeight / 2),
+			currentFaceBPoint,
+			nextFaceBPoint
+		);
+	}
+
+	// Adds the sides 
+	for (unsigned int i = 0; i < a_nSubdivisions; i++)
+	{
+		if (i + 1 < faceA.size())
+		{
+			AddTri(
+				faceA[i],
+				faceB[i],
+				faceA[i + 1]
+			);
+
+			AddTri(
+				faceA[i + 1],
+				faceB[i],
+				faceB[i + 1]
+			);
+		}
+		else
+		{
+			AddTri(
+				faceA[i],
+				faceB[i],
+				faceA[0]
+			);
+
+			AddTri(
+				faceA[0],
+				faceB[i],
+				faceB[0]
+			);
+		}
+		
+	}
+
 	// -------------------------------
 
 	// Adding information about color
@@ -115,7 +197,137 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	float radAmount = (2 * 3.14) / a_nSubdivisions;
+	
+	std::vector<vector3> innerFaceA;
+	std::vector<vector3> innerFaceB;
+
+	std::vector<vector3> outerFaceA;
+	std::vector<vector3> outerFaceB;
+
+	// Create the end faces 
+	for (unsigned int i = 0; i < a_nSubdivisions; i++)
+	{
+		// Inner 
+
+		vector3 currentFaceAPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fInnerRadius, -a_fHeight / 2);
+		vector3 nextFaceAPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, -a_fHeight / 2);
+		innerFaceA.push_back(currentFaceAPointInner);
+
+		/*AddTri(
+			vector3(0.0f, 0.0f, -a_fHeight / 2),
+			currentFaceAPointInner,
+			nextFaceAPointInner
+		);*/
+
+		vector3 currentFaceBPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fInnerRadius, a_fHeight / 2);
+		vector3 nextFaceBPointInner = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fInnerRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fInnerRadius, a_fHeight / 2);
+		innerFaceB.push_back(currentFaceBPointInner);
+
+		/*AddTri(
+			vector3(0.0f, 0.0f, a_fHeight / 2),
+			currentFaceBPointInner,
+			nextFaceBPointInner
+		);*/
+
+
+		// Outer
+
+		vector3 currentFaceAPointOuter = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fOuterRadius, -a_fHeight / 2);
+		vector3 nextFaceAPoint = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, -a_fHeight / 2);
+		outerFaceA.push_back(currentFaceAPointOuter);
+
+		/*AddTri(
+			vector3(0.0f, 0.0f, -a_fHeight / 2),
+			currentFaceAPointOuter,
+			nextFaceAPoint
+		);*/
+
+		vector3 currentFaceBPointOuter = vector3(_CMATH_::sin(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * (i + 1)) * a_fOuterRadius, a_fHeight / 2);
+		vector3 nextFaceBPointOuter = vector3(_CMATH_::sin(3.14 / 2 + radAmount * i) * a_fOuterRadius, _CMATH_::cos(3.14 / 2 + radAmount * i) * a_fOuterRadius, a_fHeight / 2);
+		outerFaceB.push_back(currentFaceBPointOuter);
+
+		/*AddTri(
+			vector3(0.0f, 0.0f, a_fHeight / 2),
+			currentFaceBPointOuter,
+			nextFaceBPointOuter
+		);*/
+
+	}
+
+
+	// Draw faces 
+	for (unsigned int i = 0; i < a_nSubdivisions; i++)
+	{
+		if (i + 1 < outerFaceA.size())
+		{
+			// Sides 
+
+			// Outside 
+			AddTri(
+				outerFaceA[i],
+				outerFaceB[i],
+				outerFaceA[i + 1]
+			);
+
+			AddTri(
+				outerFaceA[i + 1],
+				outerFaceB[i],
+				outerFaceB[i + 1]
+			);
+
+			// Inside 
+			AddTri(
+				innerFaceA[i],
+				innerFaceA[i + 1],
+				innerFaceB[i]
+			);
+
+			AddTri(
+				innerFaceA[i + 1],
+				innerFaceB[i + 1],
+				innerFaceB[i]
+			);
+
+
+			// Ends 
+			AddQuad(outerFaceA[i + 1], innerFaceA[i + 1], outerFaceA[i], innerFaceA[i]);
+			AddQuad(outerFaceB[i], innerFaceB[i], outerFaceB[i + 1], innerFaceB[i + 1]);
+		}
+		else
+		{
+			// Outside 
+			AddTri(
+				outerFaceA[i],
+				outerFaceB[i],
+				outerFaceA[0]
+			);
+
+			AddTri(
+				outerFaceA[0],
+				outerFaceB[i],
+				outerFaceB[0]
+			);
+
+			// Inside 
+			AddTri(
+				innerFaceA[i],
+				innerFaceA[0],
+				innerFaceB[i]
+			);
+
+			AddTri(
+				innerFaceA[0],
+				innerFaceB[0],
+				innerFaceB[i]
+			);
+
+			AddQuad(outerFaceA[0], innerFaceA[0], outerFaceA[i], innerFaceA[i]);
+			AddQuad(outerFaceB[i], innerFaceB[i], outerFaceB[0], innerFaceB[0]);
+		}
+
+	}
+
 	// -------------------------------
 
 	// Adding information about color
@@ -147,7 +359,13 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	
+	// Form a circle in data with sub A as its points 
+	
+	// Along each point generate a circle in data perpendicular to primary circle 
+
+	//
+
 	// -------------------------------
 
 	// Adding information about color
