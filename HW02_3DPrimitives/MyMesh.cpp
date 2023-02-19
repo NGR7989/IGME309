@@ -408,26 +408,41 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	//}
 
 
+	std::vector<vector3> points;
 	float radAmountA = (2 * PI) / a_nSubdivisionsA;
 	float radAmountB = (2 * PI) / a_nSubdivisionsB;
-	float mag = (a_fOuterRadius + a_fInnerRadius) / 2; // Dis to center of circles 
+	float minorCircleRadius = (a_fOuterRadius - a_fInnerRadius) / 2;
+	//float mag = (a_fOuterRadius + a_fInnerRadius) / 2; // Dis to center of circles 
 
+	// How smooth is the primary circle frame that the other circles are spawned on 
 	for (unsigned int i = 0; i < a_nSubdivisionsA; i++)
 	{
 		float delta = radAmountA * i;
 
+		float x = _CMATH_::cos(delta);
+		float y = _CMATH_::sin(delta);
+
+		vector3 dir = vector3(x, y, 0);
+
+		// How smooth are the circles that make the tube
 		for (unsigned int j = 0; j < a_nSubdivisionsB; j++)
 		{
-			float theta = radAmountB * i;
+			// Forms circles in data that get bigger then smaller as the go away from the
+			// center of the tours and then loop back around 
 
-			vector3 currentFramePoint = vector3(_CMATH_::sin(delta) * a_fInnerRadius, _CMATH_::cos(delta) * a_fInnerRadius, _CMATH_::sin(theta)) ;
-			vector3 nextFramePoint = vector3(_CMATH_::sin(radAmountA * (i + 1)) * a_fInnerRadius, _CMATH_::cos(radAmountA * (i + 1)) * a_fInnerRadius, _CMATH_::sin(radAmountB * (i + 1)));
+			float theta = radAmountB * j;
+			float z = _CMATH_::sin(theta);
 
-			AddTri(
-				vector3(0, 0, 0),
-				currentFramePoint,
-				nextFramePoint
-			);
+			float lerp = a_nSubdivisionsB / j;
+			float mag = a_fInnerRadius + (a_fOuterRadius - a_fInnerRadius) * lerp;
+
+			// Apllies man distance towards circle forming 
+			dir *= z * mag;
+			// Not sure if there is a vector3.up equivilent
+			dir += vector3(0, 0, z * minorCircleRadius);
+
+			
+			points.push_back(dir);
 		}
 	}
 
