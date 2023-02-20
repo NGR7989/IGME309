@@ -358,6 +358,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Release();
 	Init();
 
+
 	// Replace this with your code
 	
 	//float radAmountA = (2 * PI) / a_nSubdivisionsA;
@@ -415,34 +416,46 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	//float mag = (a_fOuterRadius + a_fInnerRadius) / 2; // Dis to center of circles 
 
 	// How smooth is the primary circle frame that the other circles are spawned on 
-	for (unsigned int i = 0; i < a_nSubdivisionsA; i++)
+	for (unsigned int i = 0; i <= a_nSubdivisionsA; i++)
 	{
 		float delta = radAmountA * i;
-
-		float x = _CMATH_::cos(delta);
-		float y = _CMATH_::sin(delta);
-
-		vector3 dir = vector3(x, y, 0);
+		float cosMain = _CMATH_::cos(delta);
+		float sinMain = _CMATH_::sin(delta);
 
 		// How smooth are the circles that make the tube
-		for (unsigned int j = 0; j < a_nSubdivisionsB; j++)
+		for (unsigned int j = 0; j <= a_nSubdivisionsB; j++)
 		{
 			// Forms circles in data that get bigger then smaller as the go away from the
 			// center of the tours and then loop back around 
 
+			// Secondary circle 
 			float theta = radAmountB * j;
-			float z = _CMATH_::sin(theta);
+			float sinMinor = _CMATH_::sin(theta);
+			float cosMinor = _CMATH_::cos(theta);
 
-			float lerp = a_nSubdivisionsB / j;
-			float mag = a_fInnerRadius + (a_fOuterRadius - a_fInnerRadius) * lerp;
 
-			// Apllies man distance towards circle forming 
-			dir *= z * mag;
-			// Not sure if there is a vector3.up equivilent
-			dir += vector3(0, 0, z * minorCircleRadius);
-
+			vector3 point = vector3(
+				(a_fInnerRadius + minorCircleRadius * cosMinor) * cosMain,
+				(a_fInnerRadius + minorCircleRadius * cosMinor) * sinMain,
+				minorCircleRadius * sinMinor);
 			
-			points.push_back(dir);
+			points.push_back(point);
+		}
+	}
+	
+
+	for (unsigned int i = 0; i < points.size(); i++)
+	{
+		if (i + a_nSubdivisionsB + 1 < points.size())
+		{
+			/*AddTri(
+					vector3(0, 0, 0),
+				points[i],
+				points[i + 1]
+				);*/
+
+			// Draws using quad sections 
+			AddQuad(points[i + a_nSubdivisionsB], points[i + a_nSubdivisionsB + 1], points[i], points[i + 1]);
 		}
 	}
 
@@ -470,7 +483,9 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	
+
+
 	// -------------------------------
 
 	// Adding information about color
