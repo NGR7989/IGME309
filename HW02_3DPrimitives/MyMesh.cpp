@@ -484,7 +484,93 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 	// Replace this with your code
 	
+	float radAmount = (2 * PI) / a_nSubdivisions;
+	float zDelta = (2 * a_fRadius) / a_nSubdivisions;
 
+	std::vector<vector3> points;
+
+	
+
+	for (int i = 1; i < a_nSubdivisions; i++)
+	{
+		// Centers the sphere
+		float z = i * zDelta - a_fRadius;
+		float theta = radAmount * i;
+
+		// Creates each circle layer 
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			float delta = radAmount * j;
+			float cos = _CMATH_::cos(delta) * _CMATH_::sin(0.5f * theta);
+			float sin = _CMATH_::sin(delta) * _CMATH_::sin(0.5f * theta);
+
+			points.push_back(vector3(cos * a_fRadius, sin * a_fRadius, z));
+			//std::cout << cos << ", " << sin << ", " << z << std::endl;
+
+		}
+	}
+
+	// Not sure why but this one tri needs to be done manually 
+	// Could not figure out before due time :(
+	AddTri(
+		points[0],
+		points[a_nSubdivisions],
+		points[a_nSubdivisions - 1]
+	);
+	
+	for (int i = 0; i < points.size(); i++)
+	{
+		if (i + a_nSubdivisions + 1 < points.size())
+		{
+			// Draws using quad sections 
+			AddQuad(points[i], points[i + 1], points[i + a_nSubdivisions], points[i + a_nSubdivisions + 1]);
+
+			
+		}
+		else if (i + a_nSubdivisions < points.size())
+		{
+			AddQuad(points[i], points[i + 1], points[i + a_nSubdivisions], points[0]);
+		}
+		else if (i + 1 < a_nSubdivisions)
+		{
+			AddQuad(points[i], points[i + 1], points[0], points[0 + 1]);
+		}
+	}
+
+	// Connecting ends
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		if (i + 1 < a_nSubdivisions)
+		{
+			AddTri(
+				vector3(0, 0, -a_fRadius),
+				points[i + 1],
+				points[i]
+			);
+
+			AddTri(
+				vector3(0, 0, a_fRadius),
+				points[points.size() - (i + 2)],
+				points[points.size() - (i + 1)]
+			);
+		}
+		else
+		{
+			// Loops 
+
+			AddTri(
+				vector3(0, 0, -a_fRadius),
+				points[0],
+				points[i]
+			);
+
+			AddTri(
+				vector3(0, 0, a_fRadius),
+				points[points.size() - 1],
+				points[points.size() - (i + 1)]
+			);
+		}
+	}
 
 	// -------------------------------
 
