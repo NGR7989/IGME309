@@ -39,7 +39,42 @@ void Application::Display(void)
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 
+	// Don't need to caluclate many meshes but render the same one multiple times 
+	// 11 width
+	// 8 height
+	std::vector<std::vector<bool> > points{ 
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0}
+	};
+
+	std::map<int, float> indexToXCoord;
+
+	for (uint y = 0; y < points.size(); y++)
+	{
+		for (uint x = 0; x < points[y].size(); x++)
+		{
+			// If the points is true then add and 
+			// calculate its local position 
+			if (points[y][x])
+			{
+				// Since cubes for this assignment have a 1 in their size then we only need
+				// to store the x coord as the int given by te for loop 
+
+				float xPos = x;
+				indexToXCoord.insert(std::pair<int, float>(y * x, xPos));
+
+			}
+		}
+	}
+
 	m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_qArcBall));
+	
 
 	// draw a skybox
 	m_pModelMngr->AddSkyboxToRenderList();
