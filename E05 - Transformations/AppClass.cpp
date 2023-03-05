@@ -8,10 +8,14 @@ void Application::InitVariables(void)
 	vector3 v3Upward = AXIS_Y;
 	m_pCameraMngr->SetPositionTargetAndUpward(v3Position, v3Target, v3Upward);
 
-	//Allocate the memory for the Meshes
-	m_pMesh = new MyMesh();
-	m_pMesh->GenerateCube(1.0f, C_BLACK);
-		
+
+	m_uMeshCount = 46;
+	for (uint i = 0; i < m_uMeshCount; ++i)
+	{
+		MyMesh* pMesh = new MyMesh();
+		m_pMeshList.push_back(pMesh); 
+		m_pMeshList[i]->GenerateCube(1.0f, C_BLACK);
+	}
 }
 void Application::Update(void)
 {
@@ -54,6 +58,7 @@ void Application::Display(void)
 	};
 
 	std::map<int, float> indexToXCoord;
+	int i = 0;
 
 	for (uint y = 0; y < points.size(); y++)
 	{
@@ -69,12 +74,18 @@ void Application::Display(void)
 				float xPos = x;
 				indexToXCoord.insert(std::pair<int, float>(y * x, xPos));
 
+				vector3 pos = vector3(xPos, y, 0);
+
+				matrix4 m4Position = glm::translate(vector3(-5.0f, -3.0f, -15.0f)) * glm::translate(pos);
+				m_pMeshList[i]->Render(m4Projection, m4View, glm::translate(m4Position, vector3(3.0f, 0.0f, 0.0f))); 
+				i++;
 			}
 		}
 	}
 
-	m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_qArcBall));
-	
+	//m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_qArcBall));
+
+
 
 	// draw a skybox
 	m_pModelMngr->AddSkyboxToRenderList();
@@ -94,7 +105,16 @@ void Application::Display(void)
 void Application::Release(void)
 {
 	//Release meshes
-	SafeDelete(m_pMesh);
+	//SafeDelete(m_pMesh);
+
+	for (uint i = 0; i < m_pMeshList.size(); ++i)
+	{
+		if (m_pMeshList[i] != nullptr)
+		{
+			delete m_pMeshList[i];
+			m_pMeshList[i] = nullptr;
+		}
+	}
 
 	//release GUI
 	ShutdownGUI();
