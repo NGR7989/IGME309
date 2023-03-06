@@ -43,18 +43,22 @@ void Application::Display(void)
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 
-	// Don't need to caluclate many meshes but render the same one multiple times 
+	static float fTimer = 0;
+	static uint uClock = m_pSystem->GenClock();
+	fTimer += static_cast<float>(m_pSystem->GetDeltaTime(uClock));
+
+	// Don't need to caluclate many meshes but render the same one multiple timeWs 
 	// 11 width
 	// 8 height
 	std::vector<std::vector<bool> > points{ 
 		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0}
+		{0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0},
+		{0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+		{0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0},
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+		{1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0}
 	};
 
 	std::map<int, float> indexToXCoord;
@@ -71,10 +75,10 @@ void Application::Display(void)
 				// Since cubes for this assignment have a 1 in their size then we only need
 				// to store the x coord as the int given by te for loop 
 
-				float xPos = x;
+				float xPos = x + sin(fTimer) * 3.0f - (3.0f);
 				indexToXCoord.insert(std::pair<int, float>(y * x, xPos));
 
-				vector3 pos = vector3(xPos, y, 0);
+				vector3 pos = vector3(xPos, points.size() - y, 0);
 
 				matrix4 m4Position = glm::translate(vector3(-5.0f, -3.0f, -15.0f)) * glm::translate(pos);
 				m_pMeshList[i]->Render(m4Projection, m4View, glm::translate(m4Position, vector3(3.0f, 0.0f, 0.0f))); 
@@ -82,9 +86,6 @@ void Application::Display(void)
 			}
 		}
 	}
-
-	//m_pMesh->Render(m4Projection, m4View, ToMatrix4(m_qArcBall));
-
 
 
 	// draw a skybox
