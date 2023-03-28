@@ -63,6 +63,49 @@ void MyRigidBody::Release(void)
 MyRigidBody::MyRigidBody(std::vector<vector3> a_pointList)
 {
 	Init();
+	uint uCount = a_pointList.size();
+
+	if (uCount < 1)
+		return;
+
+	//Find the center
+	m_v3Center = a_pointList[0];
+	//for (uint i = 1; i < uCount; i++)
+	//{
+	//	m_v3Center += a_pointList[i];
+	//}
+	//m_v3Center = m_v3Center / static_cast<float>(uCount);
+
+	m_v3MaxL = m_v3MinL = a_pointList[0];
+	for (uint i = 1; i < uCount; i++)
+	{
+		if (m_v3MaxL.x < a_pointList[i].x)
+			m_v3MaxL.x = a_pointList[i].x;
+		if (m_v3MaxL.y < a_pointList[i].y)
+			m_v3MaxL.y = a_pointList[i].y;
+		if (m_v3MaxL.z < a_pointList[i].z)
+			m_v3MaxL.z = a_pointList[i].z;
+
+		if (m_v3MinL.x > a_pointList[i].x)
+			m_v3MinL.x = a_pointList[i].x;
+		if (m_v3MinL.y > a_pointList[i].y)
+			m_v3MinL.y = a_pointList[i].y;
+		if (m_v3MinL.z > a_pointList[i].z)
+			m_v3MinL.z = a_pointList[i].z;
+	}
+
+	m_v3Center = (m_v3MaxL + m_v3MinL) / 2.0f;
+	
+
+	//Find the furthest away point from the center
+	for (uint i = 0; i < uCount; i++)
+	{
+		float fDistance = glm::distance(m_v3Center, a_pointList[i]);
+		if (m_fRadius < fDistance)
+			m_fRadius = fDistance;
+		//fDistance = std::max(m_fRadius, fDistance); //another nice way of doing the prev lines
+	}
+	m_fRadius = glm::distance(m_v3Center, m_v3MaxL);
 }
 MyRigidBody::MyRigidBody(MyRigidBody const& other)
 {
@@ -97,13 +140,64 @@ MyRigidBody& MyRigidBody::operator=(MyRigidBody const& other)
 }
 MyRigidBody::~MyRigidBody(){Release();};
 
+vector3 MyRigidBody::GlobalizeVector(vector3 a_input)
+{
+	return m_m4ToWorld * vector4(a_input, 1);
+}
+
 //--- Non Standard Singleton Methods
 void MyRigidBody::AddToRenderList(void)
 {
 	if (!m_bVisible)
 		return;
+
+	matrix4 m4Transform = m_m4ToWorld;
+
+	// This is for the sphere
+	m4Transform = m4Transform *
+		glm::translate(IDENTITY_M4, m_v3Center); //move the sphere to center
+	m4Transform = m4Transform * 
+		glm::scale(IDENTITY_M4, vector3(m_fRadius, m_fRadius, m_fRadius)); //scale it as large as the radius
+
+	//m_pMeshMngr->AddWireSphereToRenderList(m4Transform, m_v3Color);
+
+	m4Transform = m_m4ToWorld;
+	m4Transform = m4Transform * glm::translate(IDENTITY_M4, m_v3Center); // Set the box to the 
+	m4Transform = m4Transform * glm::scale(m_v3HalfWidth * 2.0f);
+	m_pMeshMngr->AddWireCubeToRenderList(m4Transform, m_v3Color);
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const other)
 {
-	return false;
+	bool bColliding;
+	float fDistance = glm::distance(GlobalizeVector(this->m_v3Center), other->GlobalizeVector(other->m_v3Center));
+
+	bColliding = (this->m_fRadius + other->m_fRadius) >= fDistance;
+	m_v3MinG = GlobalizeVector(m_v3MinL);
+	m_v3MaxG = GlobalizeVector(m_v3MaxL);
+
+	other->m_v3MinG = other->GlobalizeVector(other->m_v3MinL);
+	other->m_v3MaxG = other->GlobalizeVector(other->m_v3MaxL);
+
+	bColliding = true;
+	if (m_v3MinG.x > other->m_v3MaxG.x)
+		bColliding = false;
+	if (m_v3MaxG.x > other->m_v3MinG.x)
+		bColliding = false;
+
+	if (m_v3MinG.y > other->m_v3MaxG.y)
+		bColliding = false;
+	if (m_v3MaxG.y > other->m_v3MinG.y)
+		bColliding = false;
+
+	if (m_v3MinG.z > other->m_v3MaxG.z)
+		bColliding = false;
+	if (m_v3MaxG.z > other->m_v3MinG.z)
+		bColliding = false;
+	
+	if (bColliding)
+	{
+		m_v3Color = vector3(1.0f, 0.0f, 0.0f);
+		other->m_v3Color = vector3(1.0f, 0.0f, 0.0f);
+	}
+	return bColliding;
 }
