@@ -40,6 +40,8 @@ class MyCamera : BTXs::Camera
 	//
 	//matrix4 m_m4Projection = matrix4(1.0f); //Projection Matrix
 	//matrix4 m_m4View = matrix4(1.0f); //View matrix
+	matrix4 m_m4TargetLocalized = matrix4(1.0f);
+	vector3 m_v3TargetLocal = vector3(0.0f, 0.0f, 0.0f);
 public:
 	/*
 	USAGE: Constructor
