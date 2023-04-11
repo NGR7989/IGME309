@@ -21,16 +21,33 @@ void MyCamera::MoveForward(float a_fDistance)
 	//		 in the _Binary folder you will notice that we are moving 
 	//		 backwards and we never get closer to the plane as we should 
 	//		 because as we are looking directly at it.
-	m_v3Position += vector3(0.0f, 0.0f, a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, a_fDistance);
+	vector3 vec = (m_v3Target - m_v3Position);
+	float length = glm::sqrt(glm::pow2(vec.x) + glm::pow2(vec.y) + glm::pow2(vec.z));
+	vec /= length;
+	vec = m_m4TargetLocalized * vector4(vec, 1.0f);
+
+	m_v3Position += vec * a_fDistance; //vector3(0.0f, 0.0f, a_fDistance);
+	m_v3Target += vec * a_fDistance;
 }
 void MyCamera::MoveVertical(float a_fDistance)
 {
-	//Tip:: Look at MoveForward
+	m_v3Position += m_v3Upward * a_fDistance;
+	m_v3Target += m_v3Upward * a_fDistance;
 }
 void MyCamera::MoveSideways(float a_fDistance)
 {
-	//Tip:: Look at MoveForward
+	vector3 vecA = (m_v3Target - m_v3Position);
+	float lengthA = glm::sqrt(glm::pow2(vecA.x) + glm::pow2(vecA.y) + glm::pow2(vecA.z));
+	vecA /= lengthA;
+	vecA = m_m4TargetLocalized * vector4(vecA, 1.0f);
+
+	float upwardLength = glm::sqrt(glm::pow2(m_v3Upward.x) + glm::pow2(m_v3Upward.y) + glm::pow2(m_v3Upward.z));
+	vector3 upNormalized = m_v3Upward / upwardLength;
+	upNormalized = m_m4TargetLocalized * vector4(upNormalized, 1.0f);
+
+	vector3 sideVec = glm::cross(vecA, upNormalized);
+	m_v3Position += sideVec * a_fDistance;
+	m_v3Target += sideVec * a_fDistance;
 }
 void MyCamera::CalculateView(void)
 {
@@ -40,7 +57,17 @@ void MyCamera::CalculateView(void)
 	//		 it will receive information from the main code on how much these orientations
 	//		 have change so you only need to focus on the directional and positional 
 	//		 vectors. There is no need to calculate any right click process or connections.
-	m_m4View = glm::lookAt(m_v3Position, m_v3Target, m_v3Upward);
+	//std::cout << m_v3PitchYawRoll.x << std::endl;
+	//m_m4View = glm::lookAt(m_v3Position, m_v3Target, m_v3Upward);
+	//m_m4View = glm::rotate(glm::extractMatrixRotation(m_m4View), vector4(m_v3PitchYawRoll, 0.0f));
+	glm::quat quatAdjust = glm::quat(vector4(m_v3PitchYawRoll, 1.0f));
+	m_m4TargetLocalized = glm::toMat4(quatAdjust);
+
+	vector3 vec = (m_v3Target - m_v3Position);
+	float length = glm::sqrt(glm::pow2(vec.x) + glm::pow2(vec.y) + glm::pow2(vec.z));
+	vec /= length;
+	vec = m_m4TargetLocalized * vector4(vec, 1.0f);
+	m_m4View = glm::lookAt(m_v3Position, m_v3Position + vec * 5, m_v3Upward);
 }
 //You can assume that the code below does not need changes unless you expand the functionality
 //of the class or create helper methods, etc.
