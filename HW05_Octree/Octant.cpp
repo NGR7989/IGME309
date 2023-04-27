@@ -27,8 +27,20 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	//The following is a made-up size, you need to make sure it is measuring all the object boxes in the world
 	std::vector<vector3> lMinMax;
 	
-	lMinMax.push_back(vector3(-50.0f));
-	lMinMax.push_back(vector3(25.0f));
+
+	// Get the two pieces that are farthest from each other 
+	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++)
+	{
+		Entity* pEntity = m_pEntityMngr->GetEntity(i);
+		RigidBody* pRigideBody = pEntity->GetRigidBody();
+		vector3 max = pRigideBody->GetMaxGlobal();
+		vector3 min = pRigideBody->GetMinGlobal();
+
+		lMinMax.push_back(vector3(max));
+		lMinMax.push_back(vector3(min));
+	}
+	
+	
 	RigidBody pRigidBody = RigidBody(lMinMax);
 
 
@@ -38,15 +50,6 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	m_v3Center = pRigidBody.GetCenterLocal();
 	m_v3Min = m_v3Center - pRigidBody.GetHalfWidth();
 	m_v3Max = m_v3Center + pRigidBody.GetHalfWidth();
-
-	/*vector3 offset;
-	float step = pRigidBody.GetHalfWidth() * 0.5f;
-	for (int i = 0; i < 8; i++) {
-		offset.x = ((i & 1) ? step : -step);
-		offset.y = ((i & 2) ? step : -step);
-		offset.z = ((i & 4) ? step : -step);
-		pNode->pChild[i] = BuildOctree(center + offset, step, a_nMaxLevel - 1);
-	}*/
 	
 
 	m_uOctantCount++; //When we add an octant we increment the count
@@ -60,11 +63,33 @@ bool Octant::IsColliding(uint a_uRBIndex)
 	//If the index given is larger than the number of elements in the bounding object there is no collision
 	//As the Octree will never rotate or scale this collision is as easy as an Axis Alligned Bounding Box
 	//Get all vectors in global space (the octant ones are already in Global)
-	return true; // for the sake of startup code
+
+	bool isColliding = true;
+
+	RigidBody* currentRB = m_pEntityMngr->GetRigidBody(a_uRBIndex);
+
+	if (m_v3Max.x < currentRB->GetMinGlobal().x) //this to the right of other
+		isColliding = false;
+	if (m_v3Min.x > currentRB->GetMaxGlobal().x) //this to the left of other
+		isColliding = false;
+
+	if (m_v3Max.y < currentRB->GetMinGlobal().y) //this below of other
+		isColliding = false;
+	if (m_v3Min.y > currentRB->GetMaxGlobal().y) //this above of other
+		isColliding = false;
+
+	if (m_v3Max.z < currentRB->GetMinGlobal().z) //this behind of other
+		isColliding = false;
+	if (m_v3Min.z > currentRB->GetMaxGlobal().z) //this in front of other
+		isColliding = false;
+
+	return isColliding;
 }
 void Octant::Display(uint a_nIndex, vector3 a_v3Color)
 {
 	// Display the specified octant
+	m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_lChild[a_nIndex]->m_v3Center) *
+	glm::scale(vector3(m_lChild[a_nIndex]->m_fSize)), a_v3Color);
 }
 void Octant::Display(vector3 a_v3Color)
 {
@@ -72,6 +97,11 @@ void Octant::Display(vector3 a_v3Color)
 	//even if other objects are created
 	m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) *
 		glm::scale(vector3(m_fSize)), a_v3Color);
+	
+	for (int i = 0; i < m_lChild.size(); i++)
+	{
+		Display(i);
+	}
 }
 void Octant::Subdivide(void)
 {
@@ -84,11 +114,25 @@ void Octant::Subdivide(void)
 		return;
 
 	//Subdivide the space and allocate 8 children
+
+	float nextSize = m_fSize / 2; // Size is 2 times halfwidth 
+	Octant* next = new Octant(m_v3Center + (nextSize / 2), nextSize);
+	m_lChild.push_back(next);
+
 }
 bool Octant::ContainsAtLeast(uint a_nEntities)
 {
 	//You need to check how many entity objects live within this octant
-	return false; //return something for the sake of start up code
+	int counter = 0;
+	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++)
+	{
+		if (IsColliding(i))
+		{
+			counter++;
+		}
+	}
+
+	return counter >= m_uIdealEntityCount; 
 }
 void Octant::AssignIDtoEntity(void)
 {
@@ -172,7 +216,7 @@ void Octant::ConstructTree(uint a_nMaxLevel)
 	m_EntityList.clear();//Make sure the list of entities inside this octant is empty
 	KillBranches();
 	m_lChild.clear();
-
+	
 	//If we have more entities than those that we ideally want in this octant we subdivide it
 	if (ContainsAtLeast(m_uIdealEntityCount))
 	{
