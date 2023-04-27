@@ -26,6 +26,7 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 
 	//The following is a made-up size, you need to make sure it is measuring all the object boxes in the world
 	std::vector<vector3> lMinMax;
+	
 	lMinMax.push_back(vector3(-50.0f));
 	lMinMax.push_back(vector3(25.0f));
 	RigidBody pRigidBody = RigidBody(lMinMax);
@@ -38,8 +39,19 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	m_v3Min = m_v3Center - pRigidBody.GetHalfWidth();
 	m_v3Max = m_v3Center + pRigidBody.GetHalfWidth();
 
+	/*vector3 offset;
+	float step = pRigidBody.GetHalfWidth() * 0.5f;
+	for (int i = 0; i < 8; i++) {
+		offset.x = ((i & 1) ? step : -step);
+		offset.y = ((i & 2) ? step : -step);
+		offset.z = ((i & 4) ? step : -step);
+		pNode->pChild[i] = BuildOctree(center + offset, step, a_nMaxLevel - 1);
+	}*/
+	
+
 	m_uOctantCount++; //When we add an octant we increment the count
-	ConstructTree(m_uMaxLevel); //Construct the children
+	ConstructTree(m_uOctantCount); //Construct the children
+
 }
 
 bool Octant::IsColliding(uint a_uRBIndex)
