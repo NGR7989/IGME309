@@ -27,7 +27,7 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 		}
 	}
-	m_uOctantLevels = 1;
+	m_uOctantLevels = 3;
 	m_pRoot = new Octant(m_uOctantLevels, 5);
 	m_pEntityMngr->Update();
 }
@@ -52,7 +52,7 @@ void Application::Display(void)
 {
 	// Clear the screen
 	ClearScreen();
-
+	std::cout << m_uOctantID << std::endl;
 	//display octree
 	if (m_uOctantID == -1)
 		m_pRoot->Display();

@@ -2,7 +2,7 @@
 using namespace BTX;
 //  Octant
 uint Octant::m_uOctantCount = 0;
-uint Octant::m_uMaxLevel = 3;
+uint Octant::m_uMaxLevel = 5;
 uint Octant::m_uIdealEntityCount = 5;
 Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 {
@@ -28,7 +28,7 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	std::vector<vector3> lMinMax;
 	
 
-	// Get the two pieces that are farthest from each other 
+	// Get the pieces that are farthest from each other 
 	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++)
 	{
 		Entity* pEntity = m_pEntityMngr->GetEntity(i);
@@ -53,7 +53,7 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	
 
 	m_uOctantCount++; //When we add an octant we increment the count
-	ConstructTree(m_uOctantCount); //Construct the children
+	ConstructTree(m_uMaxLevel); //Construct the children
 
 }
 
@@ -88,21 +88,44 @@ bool Octant::IsColliding(uint a_uRBIndex)
 void Octant::Display(uint a_nIndex, vector3 a_v3Color)
 {
 	// Display the specified octant
-	m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_lChild[a_nIndex]->m_v3Center) *
-	glm::scale(vector3(m_lChild[a_nIndex]->m_fSize)), a_v3Color);
+	/*m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_lChild[a_nIndex]->m_v3Center) *
+	glm::scale(vector3(m_lChild[a_nIndex]->m_fSize)), a_v3Color);*/
+
+	if (m_uID == a_nIndex)
+	{
+		m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_lChild[a_nIndex]->m_v3Center) *
+			glm::scale(vector3(m_fSize)), a_v3Color);
+	}
+
+	for (int i = 0; i < m_uChildren; i++)
+	{
+		m_pChild[i]->Display(a_nIndex);
+	}
 }
 void Octant::Display(vector3 a_v3Color)
 {
 	//this is meant to be a recursive method, in starter code will only display the root
 	//even if other objects are created
-	m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) *
-		glm::scale(vector3(m_fSize)), a_v3Color);
+	/*m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) *
+		glm::scale(vector3(m_fSize)), a_v3Color);*/
 	
-	for (int i = 0; i < m_lChild.size(); i++)
+
+
+	/*for (int i = 0; i < m_lChild.size(); i++)
 	{
 		Display(i);
+	}*/
+
+
+	for (int i = 0; i < m_uChildren; i++)
+	{
+		m_pChild[i]->Display(a_v3Color);
 	}
+
+	m_pModelMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) *
+		glm::scale(vector3(m_fSize)), a_v3Color); 
 }
+
 void Octant::Subdivide(void)
 {
 	//If this node has reach the maximum depth return without changes
@@ -113,11 +136,61 @@ void Octant::Subdivide(void)
 	if (m_uChildren != 0)
 		return;
 
-	//Subdivide the space and allocate 8 children
 
+
+	//Subdivide the space and allocate 8 children
+	//m_uChildren = 8;
+	/*if (m_uOctantCount > m_uMaxLevel)
+	{
+		return;
+	}*/
 	float nextSize = m_fSize / 2; // Size is 2 times halfwidth 
-	Octant* next = new Octant(m_v3Center + (nextSize / 2), nextSize);
-	m_lChild.push_back(next);
+	//m_uChildren = 8;
+	//m_uChildren++;
+	std::cout << m_pChild << std::endl;
+	Octant* next = new Octant(m_v3Center + (vector3(1,1,1) * nextSize / 2), nextSize);
+	m_pChild[0] = (next);
+
+	next = new Octant(m_v3Center + (vector3(1, 1, -1) * nextSize / 2), nextSize);
+	m_pChild[1] = (next);
+	
+
+	next = new Octant(m_v3Center + (vector3(1, -1, 1) * nextSize / 2), nextSize);
+	m_pChild[2] = (next);
+	
+
+	next = new Octant(m_v3Center + (vector3(1, -1, -1) * nextSize / 2), nextSize);
+	m_pChild[3] = (next);
+	
+
+	next = new Octant(m_v3Center + (vector3(-1, 1, 1) * nextSize / 2), nextSize);
+	m_pChild[4] = (next);
+	
+
+	next = new Octant(m_v3Center + (vector3(-1, 1, -1) * nextSize / 2), nextSize);
+	m_pChild[5] = (next);
+	
+
+	next = new Octant(m_v3Center + (vector3(-1, -1, 1) * nextSize / 2), nextSize);
+	m_pChild[6] = (next);
+	
+
+	next = new Octant(m_v3Center + (vector3(-1, -1, -1) * nextSize / 2), nextSize);
+	m_pChild[7] = (next);
+
+	std::cout << m_pChild[0]->m_pRoot << std::endl;
+
+	for (int i = 0; i < 1; i++)
+	{
+		m_pChild[i]->m_pRoot = m_pRoot;
+		m_pChild[i]->m_pParent = this;
+		m_pChild[i]->m_uLevel = m_uLevel + 1;
+
+		if (m_pChild[i]->ContainsAtLeast(m_uIdealEntityCount))
+		{
+			m_pChild[i]->Subdivide();
+		}
+	}
 
 }
 bool Octant::ContainsAtLeast(uint a_nEntities)
@@ -140,6 +213,21 @@ void Octant::AssignIDtoEntity(void)
 	//Have to traverse the tree and make sure to tell the entity manager
 	//what octant (space) each object is at
 	m_pEntityMngr->AddDimension(0, m_uID);//example only, take the first entity and tell it its on this space
+
+	for (int i = 0; i < m_uChildren; i++)
+	{
+		m_lChild[i]->AssignIDtoEntity();
+	}
+
+	if (m_uChildren == 0)
+	{
+		uint entries = m_pEntityMngr->GetEntityCount();
+		for (int i = 0; i < entries; i++)
+		{
+			m_EntityList.push_back(i);
+			m_pEntityMngr->AddDimension(i, m_uID);
+		}
+	}
 }
 //-------------------------------------------------------------------------------------------------------------------
 // You can assume the following is fine and does not need changes, you may add onto it but the code is fine as is
@@ -309,6 +397,7 @@ void Octant::DisplayLeaves(vector3 a_v3Color)
 	* it will traverse the tree until it find leaves and once found will draw them
 	*/
 	uint nLeafs = m_lChild.size(); //get how many children this will have (either 0 or 8)
+	
 	for (uint nChild = 0; nChild < nLeafs; nChild++)
 	{
 		m_lChild[nChild]->DisplayLeaves(a_v3Color);
