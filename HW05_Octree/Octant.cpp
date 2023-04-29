@@ -36,14 +36,6 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 		lMinMax.push_back(m_pEntityMngr->GetEntity(i)->GetRigidBody()->GetMinGlobal());
 	}
 
-	/*vector3 offset;
-	float step = pRigidBody.GetHalfWidth() * 0.5f;
-	for (int i = 0; i < 8; i++) {
-		offset.x = ((i & 1) ? step : -step);
-		offset.y = ((i & 2) ? step : -step);
-		offset.z = ((i & 4) ? step : -step);
-		pNode->pChild[i] = BuildOctree(center + offset, step, a_nMaxLevel - 1);
-	}*/
 	RigidBody pRigidBody = RigidBody(lMinMax);
 
 	m_fSize = pRigidBody.GetHalfWidth().x * 2.0f;
@@ -62,20 +54,33 @@ bool Octant::IsColliding(uint a_uRBIndex)
 
 	RigidBody* currentRB = m_pEntityMngr->GetRigidBody(a_uRBIndex);
 
-	if (m_v3Max.x < currentRB->GetMinGlobal().x) //this to the right of other
+	if (m_v3Max.x < currentRB->GetMinGlobal().x)
+	{
 		isColliding = false;
-	if (m_v3Min.x > currentRB->GetMaxGlobal().x) //this to the left of other
+	}
+	if (m_v3Min.x > currentRB->GetMaxGlobal().x)
+	{
 		isColliding = false;
+	}
 
-	if (m_v3Max.y < currentRB->GetMinGlobal().y) //this below of other
+	if (m_v3Max.y < currentRB->GetMinGlobal().y)
+	{
 		isColliding = false;
-	if (m_v3Min.y > currentRB->GetMaxGlobal().y) //this above of other
+	}
+	if (m_v3Min.y > currentRB->GetMaxGlobal().y)
+	{
 		isColliding = false;
+	}
 
-	if (m_v3Max.z < currentRB->GetMinGlobal().z) //this behind of other
+	if (m_v3Max.z < currentRB->GetMinGlobal().z)
+	{
 		isColliding = false;
-	if (m_v3Min.z > currentRB->GetMaxGlobal().z) //this in front of other
+	}
+	if (m_v3Min.z > currentRB->GetMaxGlobal().z)
+	{
 		isColliding = false;
+	}
+		
 
 	return isColliding;
 }
@@ -89,11 +94,10 @@ void Octant::Display(uint a_nIndex, vector3 a_v3Color)
 	}
 	else
 	{
-
 		// Goes through each child if possible 
 		for (int i = 0; i < m_uChildren; i++)
 		{
-			m_pChild[i]->Display(a_nIndex);
+			m_pChild[i]->Display(a_nIndex, a_v3Color);
 		}
 	}
 }
@@ -156,6 +160,7 @@ void Octant::Subdivide(void)
 
 	for (int i = 0; i < 8; i++)
 	{
+		// Set each oct's data manualy
 		m_pChild[i]->m_pRoot = m_pRoot;
 		m_pChild[i]->m_pParent = this;
 		m_pChild[i]->m_uID = m_uID + 1;
@@ -167,7 +172,6 @@ void Octant::Subdivide(void)
 			m_pChild[i]->Subdivide();
 		}
 	}
-
 }
 bool Octant::ContainsAtLeast(uint a_nEntities)
 {
@@ -180,10 +184,15 @@ bool Octant::ContainsAtLeast(uint a_nEntities)
 		if (IsColliding(i))
 		{
 			counter++;
+
+			if (counter >= m_uIdealEntityCount)
+			{
+				return true;
+			}
 		}
 	}
 
-	return counter >= m_uIdealEntityCount;
+	return false;
 }
 void Octant::AssignIDtoEntity(void)
 {
@@ -192,6 +201,13 @@ void Octant::AssignIDtoEntity(void)
 	//what octant (space) each object is at
 	//m_pEntityMngr->AddDimension(0, m_uID);//example only, take the first entity and tell it its on this space
 	//m_pEntityMngr->AddDimension(1, m_pChild[0]->m_uID);//example only, take the first entity and tell it its on this space
+
+	// Assign each child 
+	for (int i = 0; i < m_uChildren; i++)
+	{
+		// Recursive 
+		m_pChild[i]->AssignIDtoEntity();
+	}
 
 	if (m_uChildren == 0)
 	{
@@ -202,16 +218,9 @@ void Octant::AssignIDtoEntity(void)
 			{
 				m_EntityList.push_back(i);
 				m_pEntityMngr->AddDimension(i, m_uID);
-
+				std::cout << "Entity " << m_pEntityMngr->GetEntity(i) << " assigned to id " << m_uID << std::endl;
 			}
 		}
-	}
-
-	// Assign each child 
-	for (int i = 0; i < m_uChildren; i++)
-	{
-		// Recursive 
-		m_pChild[i]->AssignIDtoEntity();
 	}
 }
 //-------------------------------------------------------------------------------------------------------------------
