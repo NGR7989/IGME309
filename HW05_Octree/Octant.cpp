@@ -52,7 +52,7 @@ Octant::Octant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	m_v3Max = m_v3Center + pRigidBody.GetHalfWidth();
 
 	m_uOctantCount++; //When we add an octant we increment the count
-	ConstructTree(m_uOctantCount); //Construct the children
+	ConstructTree(m_uMaxLevel); //Construct the children
 
 }
 
@@ -107,18 +107,23 @@ void Octant::Display(vector3 a_v3Color)
 }
 void Octant::Subdivide(void)
 {
+
 	//If this node has reach the maximum depth return without changes
 	if (m_uLevel >= m_uMaxLevel)
+	{
 		return;
+	}
 
 	//If this node has been already subdivided return without changes
 	if (m_uChildren != 0)
+	{
 		return;
-
+	}
+	
 	//Subdivide the space and allocate 8 children
 	float nextSize = m_fSize / 2; // Size is 2 times halfwidth 
 	m_uChildren = 8;
-
+	
 	Octant* next = new Octant(m_v3Center + (vector3(1, 1, 1) * nextSize / 2), nextSize);
 	m_pChild[0] = (next);
 
@@ -154,12 +159,15 @@ void Octant::Subdivide(void)
 		m_pChild[i]->m_pRoot = m_pRoot;
 		m_pChild[i]->m_pParent = this;
 		m_pChild[i]->m_uID = m_uID + 1;
+		m_pChild[i]->m_uLevel = m_uLevel + 1;
+		
 
 		if (m_pChild[i]->ContainsAtLeast(m_uIdealEntityCount))
 		{
 			m_pChild[i]->Subdivide();
 		}
 	}
+
 }
 bool Octant::ContainsAtLeast(uint a_nEntities)
 {
@@ -194,6 +202,7 @@ void Octant::AssignIDtoEntity(void)
 			{
 				m_EntityList.push_back(i);
 				m_pEntityMngr->AddDimension(i, m_uID);
+
 			}
 		}
 	}
