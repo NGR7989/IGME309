@@ -222,7 +222,7 @@ void Octant::AssignIDtoEntity(void)
 			{
 				//m_EntityList.push_back(i);
 				m_pEntityMngr->AddDimension(i, m_uID);
-				std::cout << "Entity " << m_pEntityMngr->GetEntity(i) << " assigned to id " << m_uID << " on level " << m_uLevel << std::endl;
+				//std::cout << "Entity " << m_pEntityMngr->GetEntity(i) << " assigned to id " << m_uID << " on level " << m_uLevel << std::endl;
 			}
 		}
 	}

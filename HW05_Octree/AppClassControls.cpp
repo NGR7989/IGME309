@@ -57,11 +57,19 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		m_pRoot = new Octant(m_uOctantID, 5);
 		if (m_uOctantID >= m_pRoot->GetOctantCount())
 			m_uOctantID = -1;
+
+		m_pEntityMngr->ClearDimensionSetAll();
+		SafeDelete(m_pRoot);
+		m_pRoot = new Octant(m_uOctantID, 5);
 		break;
 	case sf::Keyboard::PageDown:
 		--m_uOctantID;
 		if (m_uOctantID >= m_pRoot->GetOctantCount())
 			m_uOctantID = -1;
+
+		m_pEntityMngr->ClearDimensionSetAll();
+		SafeDelete(m_pRoot);
+		m_pRoot = new Octant(m_uOctantID, 5);
 		break;
 	case sf::Keyboard::Add:
 	case sf::Keyboard::F6:

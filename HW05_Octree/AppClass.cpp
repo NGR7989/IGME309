@@ -27,7 +27,7 @@ void Application::InitVariables(void)
 			m_pEntityMngr->SetModelMatrix(m4Position);
 		}
 	}
-	m_uOctantLevels = 5;
+	m_uOctantLevels = 4;
 	m_pRoot = new Octant(m_uOctantLevels, 5);
 	m_pEntityMngr->Update();
 }
