@@ -54,6 +54,7 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		break;
 	case sf::Keyboard::PageUp:
 		++m_uOctantID;
+		m_pRoot = new Octant(m_uOctantID, 5);
 		if (m_uOctantID >= m_pRoot->GetOctantCount())
 			m_uOctantID = -1;
 		break;
@@ -69,7 +70,6 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 			m_pEntityMngr->ClearDimensionSetAll();
 			++m_uOctantLevels;
 			SafeDelete(m_pRoot);
-			m_pRoot = new Octant(m_uOctantLevels, 5);
 		}
 		break;
 	case sf::Keyboard::F5:
@@ -79,7 +79,6 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 			m_pEntityMngr->ClearDimensionSetAll();
 			--m_uOctantLevels;
 			SafeDelete(m_pRoot);
-			m_pRoot = new Octant(m_uOctantLevels, 5);
 		}
 		break;
 	case sf::Keyboard::LShift:

@@ -158,7 +158,7 @@ void Octant::Subdivide(void)
 	next = new Octant(m_v3Center + (vector3(-1, -1, -1) * nextSize / 2), nextSize);
 	m_pChild[7] = (next);
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < m_uChildren; i++)
 	{
 		// Set each oct's data manualy
 		m_pChild[i]->m_pRoot = m_pRoot;
@@ -169,7 +169,7 @@ void Octant::Subdivide(void)
 		// Difference between layers is greater that 8
 		//m_pChild[i]->m_uID = m_uLevel * 8 + i; //m_uID + 1;
 		
-		// How many index difference for the parent 
+		// Follow set generates a unique id for the octant 
 		uint levelStart = glm::pow(8, m_uLevel + 1) - 1;
 		uint parentDifference = m_uID - (glm::pow(8, m_uLevel) - 1);
 		uint indexStart = levelStart + (parentDifference * 8);
@@ -212,34 +212,22 @@ void Octant::AssignIDtoEntity(void)
 	//m_pEntityMngr->AddDimension(0, m_uID);//example only, take the first entity and tell it its on this space
 	//m_pEntityMngr->AddDimension(1, m_pChild[0]->m_uID);//example only, take the first entity and tell it its on this space
 
-	// Assign each child 
-	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++)
+	// Assign each child
+	if (m_uChildren == 0)
 	{
-		// See if oct is colliding with current entity 
-		if (IsColliding(i))
+		for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++)
 		{
-			//m_EntityList.push_back(i);
-			m_pEntityMngr->AddDimension(i, m_uID);
-			std::cout << "Entity " << m_pEntityMngr->GetEntity(i) << " assigned to id " << m_uID << " on level " << m_uLevel << std::endl;
+			// See if oct is colliding with current entity 
+			if (IsColliding(i))
+			{
+				//m_EntityList.push_back(i);
+				m_pEntityMngr->AddDimension(i, m_uID);
+				std::cout << "Entity " << m_pEntityMngr->GetEntity(i) << " assigned to id " << m_uID << " on level " << m_uLevel << std::endl;
+			}
 		}
 	}
 
-
-	// Add to each leaf 
-	//if (m_uChildren == 0)
-	//{
-	//	for (int i = 0; i < m_pEntityMngr->GetEntityCount(); i++)
-	//	{
-	//		// See if oct is colliding with current entity 
-	//		if (IsColliding(i))
-	//		{
-	//			//m_EntityList.push_back(i);
-	//			m_pEntityMngr->AddDimension(i, m_uID);
-	//			std::cout << "Entity " << m_pEntityMngr->GetEntity(i) << " assigned to id " << m_uID << " on level " << m_uLevel << std::endl;
-	//		}
-	//	}
-	//}
-
+	// Only continues if this octant has children 
 	for (int i = 0; i < m_uChildren; i++)
 	{
 		// Recursive 
